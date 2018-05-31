@@ -1,51 +1,35 @@
 import tdl
 
-from entity import Entity
+import colors
+import constants
+from entity import Entity, get_blocking_entities_at_location
 from input_handlers import handle_keys
 from map_utils import make_map, GameMap
 from render_functions import render_all, clear_all
 
 
 def main():
-    screen_width = 80
-    screen_height = 50
-    map_width = 80
-    map_height = 45
-
-    room_max_size = 10
-    room_min_size = 6
-    max_rooms = 30
-
-    fov_algorithm = 'BASIC'
-    fov_light_walls = True
-    fov_radius = 10
-
-    colors = {
-        'dark_wall': (0, 0, 100),
-        'dark_ground': (50, 50, 150),
-        'light_wall': (130, 110, 50),
-        'light_ground': (200, 180, 50)
-    }
-
-    player = Entity(screen_width // 2, screen_height // 2, '@', (255, 255, 255))
-    npc = Entity(screen_width // 2 - 5, screen_height // 2, '@', (255, 255, 0))
-    entities = [npc, player]
+    player = Entity(0, 0, '@', colors.white, 'Player', blocks=True)
+    entities = [player]
 
     tdl.set_font('arial10x10.png', greyscale=True, altLayout=True)
 
-    root_console = tdl.init(screen_width, screen_height, title='Lanlord')
-    con = tdl.Console(screen_width, screen_height)
+    root_console = tdl.init(constants.screen_width, constants.screen_height, title='Lanlord')
+    con = tdl.Console(constants.screen_width, constants.screen_height)
 
-    game_map = GameMap(map_width, map_height)
-    make_map(game_map, max_rooms, room_min_size, room_max_size, map_width, map_height, player)
+    game_map = GameMap()
+    make_map(game_map, player, entities)
 
     fov_recompute = True
 
     while not tdl.event.is_window_closed():
         if fov_recompute:
-            game_map.compute_fov(player.x, player.y, fov=fov_algorithm, radius=fov_radius, light_walls=fov_light_walls)
+            game_map.compute_fov(player.x, player.y,
+                                 fov=constants.fov_algorithm,
+                                 radius=constants.fov_radius,
+                                 light_walls=constants.fov_light_walls)
 
-        render_all(con, entities, game_map, fov_recompute, root_console, screen_width, screen_height, colors)
+        render_all(con, entities, game_map, fov_recompute, root_console)
         tdl.flush()
 
         clear_all(con, entities)
@@ -70,10 +54,17 @@ def main():
 
         if move:
             dx, dy = move
+            destination_x = player.x + dx
+            destination_y = player.y + dy
 
-            if game_map.walkable[player.x + dx, player.y + dy]:
-                player.move(dx, dy)
-                fov_recompute = True
+            if game_map.walkable[destination_x, destination_y]:
+                target = get_blocking_entities_at_location(entities, destination_x, destination_y)
+
+                if target:
+                    print('You attack the ' + target.name)
+                else:
+                    player.move(dx, dy)
+                    fov_recompute = True
 
         if exit_:
             return True

@@ -1,11 +1,15 @@
 from tdl.map import Map
 from random import randint
 
+import colors
+import constants
+from entity import Entity
+
 
 class GameMap(Map):
-    def __init__(self, width, height):
-        super().__init__(width, height)
-        self.explored = [[False for _ in range(height)] for _ in range(width)]
+    def __init__(self):
+        super().__init__(constants.map_width, constants.map_height)
+        self.explored = [[False for _ in range(constants.map_height)] for _ in range(constants.map_width)]
 
 
 class Rect:
@@ -46,17 +50,36 @@ def create_v_tunnel(game_map, y1, y2, x):
         game_map.transparent[x, y] = True
 
 
-def make_map(game_map, max_rooms, room_min_size, room_max_size, map_width, map_height, player):
+def place_entities(room, entities, max_monsters_per_room):
+    # Get a random number of monsters
+    number_of_monsters = randint(0, max_monsters_per_room)
+
+    for i in range(number_of_monsters):
+        # Choose a random location in the room
+        x = randint(room.x1 + 1, room.x2 - 1)
+        y = randint(room.y1 + 1, room.y2 - 1)
+
+        if not any([entity for entity in entities if entity.x == x and entity.y == y]):
+            if randint(0, 100) < 80:
+                monster = Entity(x, y, 'o', colors.desaturated_green, 'Orc', blocks=True)
+            else:
+                monster = Entity(x, y, 'T', colors.darker_green, 'Troll', blocks=True)
+
+            entities.append(monster)
+
+
+def make_map(game_map, player, entities):
+
     rooms = []
     num_rooms = 0
 
-    for r in range(max_rooms):
+    for r in range(constants.max_rooms):
         # random width and height
-        w = randint(room_min_size, room_max_size)
-        h = randint(room_min_size, room_max_size)
+        w = randint(constants.room_min_size, constants.room_max_size)
+        h = randint(constants.room_min_size, constants.room_max_size)
         # random position without going out of the boundaries of the map
-        x = randint(0, map_width - w - 1)
-        y = randint(0, map_height - h - 1)
+        x = randint(0, constants.map_width - w - 1)
+        y = randint(0, constants.map_height - h - 1)
 
         # "Rect" class makes rectangles easier to work with
         new_room = Rect(x, y, w, h)
@@ -95,6 +118,9 @@ def make_map(game_map, max_rooms, room_min_size, room_max_size, map_width, map_h
                     create_v_tunnel(game_map, prev_y, new_y, prev_x)
                     create_h_tunnel(game_map, prev_x, new_x, new_y)
 
-                    # finally, append the new room to the list
+                # place some stuff in the room
+                place_entities(new_room, entities, constants.max_monsters_per_room)
+
+            # finally, append the new room to the list
             rooms.append(new_room)
             num_rooms += 1
