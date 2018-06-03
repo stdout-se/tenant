@@ -39,6 +39,7 @@ def main():
     mouse_coordinates = (0, 0)
 
     game_state = GameStates.PLAYERS_TURN
+    previous_game_state = game_state
 
     while not tdl.event.is_window_closed():
         if fov_recompute:
@@ -47,7 +48,8 @@ def main():
                                  radius=constants.fov_radius,
                                  light_walls=constants.fov_light_walls)
 
-        render_all(con, panel, entities, player, game_map, fov_recompute, root_console, message_log, mouse_coordinates)
+        render_all(con, panel, entities, player, game_map, fov_recompute, root_console, message_log, mouse_coordinates,
+                   game_state)
         tdl.flush()
 
         clear_all(con, entities)
@@ -66,10 +68,13 @@ def main():
         if not user_input:
             continue
 
-        action = handle_keys(user_input)
+        action = handle_keys(user_input, game_state)
 
         move = action.get('move')
         pickup = action.get('pickup')
+        show_inventory = action.get('show_inventory')
+        drop_inventory = action.get('drop_inventory')
+        inventory_index = action.get('inventory_index')
         exit_ = action.get('exit')
         fullscreen = action.get('fullscreen')
 
@@ -102,8 +107,29 @@ def main():
             else:
                 message_log.add_message(Message('There is nothing here to pick up', colors.yellow))
 
+        if show_inventory:
+            previous_game_state = game_state
+            game_state = GameStates.SHOW_INVENTORY
+
+        if drop_inventory:
+            previous_game_state = game_state
+            game_state = GameStates.DROP_INVENTORY
+
+        # Player is manipulating inventory
+        if inventory_index is not None and previous_game_state != GameStates.PLAYER_DEAD and inventory_index < len(
+                player.inventory.items):
+            item = player.inventory.items[inventory_index]
+
+            if game_state == GameStates.SHOW_INVENTORY:
+                player_turn_results.extend(player.inventory.use(item))
+            elif game_state == GameStates.DROP_INVENTORY:
+                player_turn_results.extend(player.inventory.drop_item(item))
+
         if exit_:
-            return True
+            if game_state in (GameStates.SHOW_INVENTORY, GameStates.DROP_INVENTORY):
+                game_state = previous_game_state
+            else:
+                return True
 
         if fullscreen:
             tdl.set_fullscreen(not tdl.get_fullscreen())
@@ -112,6 +138,8 @@ def main():
             message = player_turn_result.get('message')
             dead_entity = player_turn_result.get('dead')
             item_added = player_turn_result.get('item_added')
+            item_consumed = player_turn_result.get('consumed')
+            item_dropped = player_turn_result.get('item_dropped')
 
             if message:
                 message_log.add_message(message)
@@ -126,6 +154,14 @@ def main():
 
             if item_added:
                 entities.remove(item_added)
+
+                game_state = GameStates.ENEMY_TURN
+
+            if item_consumed:
+                game_state = GameStates.ENEMY_TURN
+
+            if item_dropped:
+                entities.append(item_dropped)
 
                 game_state = GameStates.ENEMY_TURN
 
