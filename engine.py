@@ -5,40 +5,28 @@ import tdl
 
 import colors
 import constants
-from components.fighter import Fighter
-from components.inventory import Inventory
 from death_functions import kill_player, kill_monster
-from entity import Entity, get_blocking_entities_at_location
-from game_messages import MessageLog, Message
+from entity import get_blocking_entities_at_location
+from game_messages import Message
 from game_states import GameStates
+from initialize_new_game import get_game_variables
 from input_handlers import handle_keys, handle_mouse
-from map_utils import make_map, GameMap
-from render_functions import render_all, clear_all, RenderOrder
+from render_functions import render_all, clear_all
 
 
 def main():
-    fighter_component = Fighter(hp=30, defense=2, power=5)
-    inventory_component = Inventory(26)
-    player = Entity(0, 0, '@', colors.white, 'Player', blocks=True, render_order=RenderOrder.ACTOR,
-                    fighter=fighter_component, inventory=inventory_component)
-    entities = [player]
-
     tdl.set_font('arial10x10.png', greyscale=True, altLayout=True)
 
     root_console = tdl.init(constants.screen_width, constants.screen_height, title='Tenant')
     con = tdl.Console(constants.screen_width, constants.screen_height)
     panel = tdl.Console(constants.screen_width, constants.panel_height)
 
-    game_map = GameMap()
-    make_map(game_map, player, entities)
-
     fov_recompute = True
 
-    message_log = MessageLog()
+    player, entities, game_map, message_log, game_state = get_game_variables()
 
     mouse_coordinates = (0, 0)
 
-    game_state = GameStates.PLAYERS_TURN
     previous_game_state = game_state
 
     targeting_item = None
@@ -71,6 +59,7 @@ def main():
             user_input = None
             user_mouse_input = None
 
+        # noinspection PyUnboundLocalVariable
         if not (user_input or user_mouse_input):
             continue
 
@@ -197,6 +186,7 @@ def main():
 
                 targeting_item = targeting
 
+                # noinspection PyUnresolvedReferences
                 message_log.add_message(targeting_item.item.targeting_message)
 
         if game_state == GameStates.ENEMY_TURN:
