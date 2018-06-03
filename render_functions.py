@@ -55,7 +55,7 @@ def render_all(con, panel, entities, player, game_map, fov_recompute, root_conso
 
                 game_map.explored[x][y] = True
 
-            elif game_map.explored[x][y]:
+            elif game_map.explored[x][y] or constants.debug:
                 if wall:
                     con.draw_char(x, y, None, fg=None, bg=colors.dark_wall)
                 else:
@@ -99,7 +99,7 @@ def clear_all(con, entities):
 
 
 def draw_entity(con, entity, fov):
-    if fov[entity.x, entity.y]:
+    if fov[entity.x, entity.y] or constants.debug:
         con.draw_char(entity.x, entity.y, entity.char, entity.color, bg=None)
 
 

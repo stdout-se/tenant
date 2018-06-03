@@ -22,3 +22,5 @@ fov_radius = 10
 
 max_monsters_per_room = 3
 max_items_per_room = 2
+
+debug = False
