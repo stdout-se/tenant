@@ -1,5 +1,5 @@
 def handle_keys(user_input):
-    # key_char = user_input.char
+    key_char = user_input.char
 
     # Movement keys
     if user_input.key == 'UP':
@@ -10,6 +10,9 @@ def handle_keys(user_input):
         return {'move': (-1, 0)}
     elif user_input.key == 'RIGHT':
         return {'move': (1, 0)}
+
+    if key_char == 'g':
+        return {'pickup': True}
 
     if user_input.key == 'ENTER' and user_input.alt:
         # Alt+Enter: toggle full screen
