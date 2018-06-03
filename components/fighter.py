@@ -34,9 +34,13 @@ class Fighter:
 
         if damage > 0:
             target.fighter.take_damage(damage)
-            results.append({'message': Message(f'{attacker} attacks {target.name} for {damage} hit points')})
+            results.append({
+                'message': Message(f'{attacker} attacks {target.name} for {damage} hit points')
+            })
             results.extend(target.fighter.take_damage(damage))
         else:
-            results.append({'message': Message(f'{attacker} attacks {target.name}, but does no damage')})
+            results.append({
+                'message': Message(f'{attacker} attacks {target.name}, but does no damage')
+            })
 
         return results

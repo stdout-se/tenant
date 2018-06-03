@@ -7,3 +7,4 @@ class GameStates(Enum):
     PLAYERS_TURN = auto()
     SHOW_INVENTORY = auto()
     DROP_INVENTORY = auto()
+    TARGETING = auto()
