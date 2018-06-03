@@ -1,8 +1,44 @@
+from enum import Enum
+
 import colors
 import constants
 
 
-def render_all(con, entities, game_map, fov_recompute, root_console):
+class RenderOrder(Enum):
+    CORPSE = 1
+    ITEM = 2
+    ACTOR = 3
+
+
+def get_names_under_mouse(mouse_coordinates, entities, game_map):
+    x, y = mouse_coordinates
+
+    names = [entity.name for entity in entities
+             if entity.x == x and entity.y == y and game_map.fov[entity.x, entity.y]]
+    names = ', '.join(names)
+
+    return names.capitalize()
+
+
+def render_bar(panel, x, y, total_width, name, value, maximum, bar_color, back_color, string_color):
+    # Render a bar (HP, experience, etc). First calculate the width of the bar
+    bar_width = int(float(value) / maximum * total_width)
+
+    # Render the background first
+    panel.draw_rect(x, y, total_width, 1, None, bg=back_color)
+
+    # Now render the bar on top
+    if bar_width > 0:
+        panel.draw_rect(x, y, bar_width, 1, None, bg=bar_color)
+
+    # Finally, some centered text with the values
+    text = f'{name}: {value}/{maximum}'
+    x_centered = x + (total_width - len(text)) // 2
+
+    panel.draw_str(x_centered, y, text, fg=string_color, bg=None)
+
+
+def render_all(con, panel, entities, player, game_map, fov_recompute, root_console, message_log, mouse_coordinates):
     # Draw all the tiles in the game map
     if fov_recompute:
         for x, y, in game_map:
@@ -22,11 +58,28 @@ def render_all(con, entities, game_map, fov_recompute, root_console):
                 else:
                     con.draw_char(x, y, None, fg=None, bg=colors.dark_ground)
 
+    entities_in_render_order = sorted(entities, key=lambda e: e.render_order.value)
+
     # Draw all entities in the list
-    for entity in entities:
+    for entity in entities_in_render_order:
         draw_entity(con, entity, game_map.fov)
 
     root_console.blit(con, 0, 0, constants.screen_width, constants.screen_height, 0, 0)
+
+    panel.clear(fg=colors.white, bg=colors.black)
+
+    # Print the game messages, one line at a time
+    for y, message in enumerate(message_log.messages):
+        panel.draw_str(constants.message_x, y + 1, message.text, bg=None, fg=message.color)
+
+    # Show player health bar
+    render_bar(panel, 1, 1, constants.bar_width, 'HP', player.fighter.hp, player.fighter.max_hp, colors.light_red,
+               colors.darker_red, colors.white)
+
+    # Show entities under the mouse cursor
+    panel.draw_str(1, 0, get_names_under_mouse(mouse_coordinates, entities, game_map))
+
+    root_console.blit(panel, 0, constants.panel_y, constants.screen_width, constants.panel_height, 0, 0)
 
 
 def clear_all(con, entities):

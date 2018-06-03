@@ -6,27 +6,35 @@ import tdl
 import colors
 import constants
 from components.fighter import Fighter
+from death_functions import kill_player, kill_monster
 from entity import Entity, get_blocking_entities_at_location
+from game_messages import MessageLog
 from game_states import GameStates
 from input_handlers import handle_keys
 from map_utils import make_map, GameMap
-from render_functions import render_all, clear_all
+from render_functions import render_all, clear_all, RenderOrder
 
 
 def main():
     fighter_component = Fighter(hp=30, defense=2, power=5)
-    player = Entity(0, 0, '@', colors.white, 'Player', blocks=True, fighter=fighter_component)
+    player = Entity(0, 0, '@', colors.white, 'Player', blocks=True,
+                    render_order=RenderOrder.ACTOR, fighter=fighter_component)
     entities = [player]
 
     tdl.set_font('arial10x10.png', greyscale=True, altLayout=True)
 
-    root_console = tdl.init(constants.screen_width, constants.screen_height, title='Lanlord')
+    root_console = tdl.init(constants.screen_width, constants.screen_height, title='Tenant')
     con = tdl.Console(constants.screen_width, constants.screen_height)
+    panel = tdl.Console(constants.screen_width, constants.panel_height)
 
     game_map = GameMap()
     make_map(game_map, player, entities)
 
     fov_recompute = True
+
+    message_log = MessageLog()
+
+    mouse_coordinates = (0, 0)
 
     game_state = GameStates.PLAYERS_TURN
 
@@ -37,7 +45,7 @@ def main():
                                  radius=constants.fov_radius,
                                  light_walls=constants.fov_light_walls)
 
-        render_all(con, entities, game_map, fov_recompute, root_console)
+        render_all(con, panel, entities, player, game_map, fov_recompute, root_console, message_log, mouse_coordinates)
         tdl.flush()
 
         clear_all(con, entities)
@@ -48,6 +56,8 @@ def main():
             if event.type == 'KEYDOWN':
                 user_input = event
                 break
+            elif event.type == 'MOUSEMOTION':
+                mouse_coordinates = event.cell
         else:
             user_input = None
 
@@ -90,10 +100,15 @@ def main():
             dead_entity = player_turn_result.get('dead')
 
             if message:
-                print(message)
+                message_log.add_message(message)
 
             if dead_entity:
-                pass  # We'll do something here momentarily
+                if dead_entity == player:
+                    message, game_state = kill_player(dead_entity)
+                else:
+                    message = kill_monster(dead_entity)
+
+                message_log.add_message(message)
 
         if game_state == GameStates.ENEMY_TURN:
             for entity in entities:
@@ -105,12 +120,23 @@ def main():
                         dead_entity = enemy_turn_result.get('dead')
 
                         if message:
-                            print(message)
+                            message_log.add_message(message)
 
                         if dead_entity:
-                            pass
-                else:
-                    game_state = GameStates.PLAYERS_TURN
+                            if dead_entity == player:
+                                message, game_state = kill_player(dead_entity)
+                            else:
+                                message = kill_monster(dead_entity)
+
+                            message_log.add_message(message)
+
+                            if game_state == GameStates.PLAYER_DEAD:
+                                break
+
+                    if game_state == GameStates.PLAYER_DEAD:
+                        break
+            else:
+                game_state = GameStates.PLAYERS_TURN
 
 
 if __name__ == '__main__':
