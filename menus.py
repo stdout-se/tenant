@@ -6,7 +6,7 @@ import colors
 import constants
 
 
-def menu(con, root, header, options, width):
+def menu(con, root_console, header, options, width):
     if len(options) > 26:
         raise ValueError('Cannot have more than 26 options')
 
@@ -34,14 +34,32 @@ def menu(con, root, header, options, width):
     # Blit the contents of "window" to the root console
     x = constants.screen_width // 2 - width // 2
     y = constants.screen_height // 2 - height // 2
-    root.blit(window, x, y, width, height, 0, 0)
+    root_console.blit(window, x, y, width, height, 0, 0)
 
 
-def inventory_menu(con, root, header, inventory, inventory_width):
+def inventory_menu(con, root_console, header, inventory, inventory_width):
     # Show a menu with each item of the inventory as an option
     if len(inventory.items) == 0:
         options = ['Inventory is empty']
     else:
         options = [item.name for item in inventory.items]
 
-    menu(con, root, header, options, inventory_width)
+    menu(con, root_console, header, options, inventory_width)
+
+
+def main_menu(con, root_console, background_image):
+    background_image.blit_2x(root_console, 0, 0)
+
+    title = 'TENANT SIMULATOR'
+    center = (constants.screen_width - len(title)) // 2
+    root_console.draw_str(center, constants.screen_height // 2 - 4, title, bg=None, fg=colors.light_yellow)
+
+    title = 'By name'
+    center = (constants.screen_width - len(title)) // 2
+    root_console.draw_str(center, constants.screen_height - 2, title, bg=None, fg=colors.light_yellow)
+
+    menu(con, root_console, '', ['Play a new game', 'Continue last game', 'Quit'], 24)
+
+
+def message_box(con, root_console, header, width):
+    menu(con, root_console, header, [], width)

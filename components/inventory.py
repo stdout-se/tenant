@@ -39,6 +39,7 @@ class Inventory:
                 results.append({'targeting': item_entity})
             else:
                 kwargs = {**item_component.function_kwargs, **kwargs}
+                # noinspection PyUnresolvedReferences
                 item_use_results = item_component.use_function(self.owner, **kwargs)
 
                 for item_use_result in item_use_results:
@@ -55,7 +56,9 @@ class Inventory:
     def drop_item(self, item):
         results = []
 
+        # noinspection PyUnresolvedReferences
         item.x = self.owner.x
+        # noinspection PyUnresolvedReferences
         item.y = self.owner.y
 
         self.remove_item(item)

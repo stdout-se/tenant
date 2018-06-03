@@ -81,7 +81,7 @@ def place_entities(room, entities, max_monsters_per_room, max_items_per_room):
 
     for i in range(number_of_items):
         # Choose a random location in the room
-        x = randint(room.x1 + 1, room.x2 -1)
+        x = randint(room.x1 + 1, room.x2 - 1)
         y = randint(room.y1 + 1, room.y2 - 1)
 
         if not any([entity for entity in entities if entity.x == x and entity.y == y]):

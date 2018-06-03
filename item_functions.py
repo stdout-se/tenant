@@ -62,6 +62,7 @@ def cast_lightning(*args, **kwargs):
     return results
 
 
+# noinspection PyUnusedLocal
 def cast_fireball(*args, **kwargs):
     entities = kwargs.get('entities')
     game_map = kwargs.get('game_map')
@@ -94,6 +95,7 @@ def cast_fireball(*args, **kwargs):
     return results
 
 
+# noinspection PyUnusedLocal
 def cast_confuse(*args, **kwargs):
     entities = kwargs.get('entities')
     game_map = kwargs.get('game_map')

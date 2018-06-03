@@ -1,7 +1,7 @@
-# http://rogueliketutorials.com/tdl/6
-# Continue: Create a new python file called death_functions.py
+# http://rogueliketutorials.com/tdl/11
 
 import tdl
+from tcod import image_load
 
 import colors
 import constants
@@ -9,8 +9,10 @@ from death_functions import kill_player, kill_monster
 from entity import get_blocking_entities_at_location
 from game_messages import Message
 from game_states import GameStates
-from initialize_new_game import get_game_variables
-from input_handlers import handle_keys, handle_mouse
+from loader_functions.initialize_new_game import get_game_variables
+from input_handlers import handle_keys, handle_mouse, handle_main_menu
+from loader_functions.data_loaders import load_game, save_game
+from menus import main_menu, message_box
 from render_functions import render_all, clear_all
 
 
@@ -21,9 +23,64 @@ def main():
     con = tdl.Console(constants.screen_width, constants.screen_height)
     panel = tdl.Console(constants.screen_width, constants.panel_height)
 
-    fov_recompute = True
+    player = None
+    entities = []
+    game_map = None
+    message_log = None
+    game_state = None
 
-    player, entities, game_map, message_log, game_state = get_game_variables()
+    show_main_menu = True
+    show_load_error_message = False
+
+    main_menu_background_image = image_load('menu_background.png')
+
+    while not tdl.event.is_window_closed():
+        for event in tdl.event.get():
+            if event.type == 'KEYDOWN':
+                user_input = event
+                break
+        else:
+            user_input = None
+
+        if show_main_menu:
+            main_menu(con, root_console, main_menu_background_image)
+
+            if show_load_error_message:
+                message_box(con, root_console, 'No savegame to load', 50)
+
+            tdl.flush()
+
+            action = handle_main_menu(user_input)
+
+            new_game = action.get('new_game')
+            load_saved_game = action.get('load_game')
+            exit_game = action.get('exit')
+
+            if show_load_error_message and (new_game or load_saved_game or exit_game):
+                show_load_error_message = False
+            elif new_game:
+                player, entities, game_map, message_log, game_state = get_game_variables()
+                game_state = GameStates.PLAYERS_TURN
+
+                show_main_menu = False
+            elif load_saved_game:
+                try:
+                    player, entities, game_map, message_log, game_state = load_game()
+                    show_main_menu = False
+                except FileNotFoundError:
+                    show_load_error_message = True
+            elif exit_game:
+                break
+        else:
+            root_console.clear()
+            con.clear()
+            panel.clear()
+            play_game(player, entities, game_map, message_log, game_state, root_console, con, panel)
+            show_main_menu = True
+
+
+def play_game(player, entities, game_map, message_log, game_state, root_console, con, panel):
+    fov_recompute = True
 
     mouse_coordinates = (0, 0)
 
@@ -140,6 +197,7 @@ def main():
             elif game_state == GameStates.TARGETING:
                 player_turn_results.append({'targeting_cancelled': True})
             else:
+                save_game(player, entities, game_map, message_log, game_state)
                 return True
 
         if fullscreen:

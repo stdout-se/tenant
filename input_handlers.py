@@ -74,18 +74,6 @@ def handle_player_dead_keys(user_input):
     return {}
 
 
-def handle_mouse(mouse_event):
-    if mouse_event:
-        (x, y) = mouse_event.cell
-
-        if mouse_event.button == 'LEFT':
-            return {'left_click': (x, y)}
-        elif mouse_event.button == 'RIGHT':
-            return {'right_click': (x, y)}
-
-    return {}
-
-
 def handle_inventory_keys(user_input):
     if not user_input.char:
         return {}
@@ -104,4 +92,30 @@ def handle_inventory_keys(user_input):
         return {'exit': True}
 
     # No key was pressed
+    return {}
+
+
+def handle_main_menu(user_input):
+    if user_input:
+        key_char = user_input.char
+
+        if key_char == 'a':
+            return {'new_game': True}
+        elif key_char == 'b':
+            return {'load_game': True}
+        elif key_char == 'c' or user_input.key == 'ESCAPE':
+            return {'exit': True}
+
+    return {}
+
+
+def handle_mouse(mouse_event):
+    if mouse_event:
+        (x, y) = mouse_event.cell
+
+        if mouse_event.button == 'LEFT':
+            return {'left_click': (x, y)}
+        elif mouse_event.button == 'RIGHT':
+            return {'right_click': (x, y)}
+
     return {}
