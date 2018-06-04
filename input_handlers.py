@@ -37,6 +37,9 @@ def handle_player_turn_keys(user_input):
     if key_char == 'd':
         return{'drop_inventory': True}
 
+    if key_char == 'e':
+        return{'take_stairs': True}
+
     if user_input.key == 'ENTER' and user_input.alt:
         # Alt+Enter: toggle full screen
         return {'fullscreen': True}

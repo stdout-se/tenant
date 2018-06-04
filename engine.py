@@ -1,4 +1,6 @@
 # http://rogueliketutorials.com/tdl/11
+# Part: XP points
+# "reward the player with experience points"
 
 import tdl
 from tcod import image_load
@@ -12,6 +14,7 @@ from game_states import GameStates
 from loader_functions.initialize_new_game import get_game_variables
 from input_handlers import handle_keys, handle_mouse, handle_main_menu
 from loader_functions.data_loaders import load_game, save_game
+from map_utils import next_floor
 from menus import main_menu, message_box
 from render_functions import render_all, clear_all
 
@@ -128,6 +131,7 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
         show_inventory = action.get('show_inventory')
         drop_inventory = action.get('drop_inventory')
         inventory_index = action.get('inventory_index')
+        take_stairs = action.get('take_stairs')
         exit_ = action.get('exit')
         fullscreen = action.get('fullscreen')
 
@@ -180,6 +184,17 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
                 player_turn_results.extend(player.inventory.use(item, entities=entities, game_map=game_map))
             elif game_state == GameStates.DROP_INVENTORY:
                 player_turn_results.extend(player.inventory.drop_item(item))
+
+        if take_stairs and game_state == GameStates.PLAYERS_TURN:
+            for entity in entities:
+                if entity.stairs and entity.x == player.x and entity.y == player.y:
+                    game_map, entities = next_floor(player, message_log, entity.stairs.floor)
+                    fov_recompute = True
+                    con.clear()
+
+                    break
+            else:
+                message_log.add_message(Message('There are no stairs here', colors.yellow))
 
         if game_state == GameStates.TARGETING:
             if left_click:
