@@ -10,6 +10,7 @@ from components.stairs import Stairs
 from entity import Entity
 from game_messages import Message
 from item_functions import heal, cast_lightning, cast_fireball, cast_confuse
+from random_utils import random_choice_from_dict, from_dungeon_level
 from render_functions import RenderOrder
 
 
@@ -59,9 +60,23 @@ def create_v_tunnel(game_map, y1, y2, x):
         game_map.transparent[x, y] = True
 
 
-def place_entities(room, entities, max_monsters_per_room, max_items_per_room):
+def place_entities(room, entities, dungeon_level):
+    max_monsters_per_room = from_dungeon_level([[2, 1], [3, 4], [5, 6]], dungeon_level)
+    max_items_per_room = from_dungeon_level([[1, 1], [2, 4]], dungeon_level)
+
     number_of_monsters = randint(0, max_monsters_per_room)
     number_of_items = randint(0, max_items_per_room)
+
+    monster_chances = {
+        'orc': 80,
+        'troll': from_dungeon_level([[15, 3], [30, 5], [60, 7]], dungeon_level)
+    }
+    item_chances = {
+        'healing_potion': 35,
+        'lightning_scroll': from_dungeon_level([[25, 4]], dungeon_level),
+        'fireball_scroll': from_dungeon_level([[25, 6]], dungeon_level),
+        'confusion_scroll': from_dungeon_level([[10, 2]], dungeon_level)
+    }
 
     for i in range(number_of_monsters):
         # Choose a random location in the room
@@ -69,7 +84,8 @@ def place_entities(room, entities, max_monsters_per_room, max_items_per_room):
         y = randint(room.y1 + 1, room.y2 - 1)
 
         if not any([entity for entity in entities if entity.x == x and entity.y == y]):
-            if randint(0, 100) < 80:
+            monster_choice = random_choice_from_dict(monster_chances)
+            if monster_choice == 'orc':
                 fighter_component = Fighter(hp=10, defense=0, power=3, xp=35)
                 ai_component = BasicMonster()
                 monster = Entity(x, y, 'o', colors.desaturated_green, 'Orc', blocks=True,
@@ -88,19 +104,19 @@ def place_entities(room, entities, max_monsters_per_room, max_items_per_room):
         y = randint(room.y1 + 1, room.y2 - 1)
 
         if not any([entity for entity in entities if entity.x == x and entity.y == y]):
-            item_chance = randint(0, 100)
+            item_choice = random_choice_from_dict(item_chances)
 
-            if item_chance < 70:
+            if item_choice == 'healing_potion':
                 item_component = Item(use_function=heal, amount=4)
                 item = Entity(x, y, '!', colors.violet, 'Healing Potion', render_order=RenderOrder.ITEM,
                               item=item_component)
-            elif item_chance < 80:
+            elif item_choice == 'fireball_scroll':
                 item_component = Item(use_function=cast_fireball, targeting=True, targeting_message=Message(
                     'Left-click a target tile to cast, or use right-click to cancel', colors.light_cyan
                 ), damage=12, radius=3)
                 item = Entity(x, y, '#', colors.red, 'Fireball Scroll', render_order=RenderOrder.ITEM,
                               item=item_component)
-            elif item_chance < 90:
+            elif item_choice == 'confusion_scroll':
                 item_component = Item(use_function=cast_confuse, targeting=True, targeting_message=Message(
                     'Left-click a target tile to cast, or use right-click to cancel', colors.light_cyan
                 ), damage=12, radius=3)
@@ -170,7 +186,7 @@ def make_map(game_map, player, entities):
                     create_h_tunnel(game_map, prev_x, new_x, new_y)
 
                 # place some stuff in the room
-                place_entities(new_room, entities, constants.max_monsters_per_room, constants.max_items_per_room)
+                place_entities(new_room, entities, game_map.dungeon_level)
 
             # finally, append the new room to the list
             rooms.append(new_room)

@@ -20,9 +20,6 @@ fov_algorithm = 'BASIC'
 fov_light_walls = True
 fov_radius = 10
 
-max_monsters_per_room = 3
-max_items_per_room = 2
-
 level_up_base = 200
 level_up_factor = 150
 
