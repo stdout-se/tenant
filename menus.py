@@ -61,5 +61,31 @@ def main_menu(con, root_console, background_image):
     menu(con, root_console, '', ['Play a new game', 'Continue last game', 'Quit'], 24)
 
 
+def level_up_menu(con, root_console, header, player, menu_width):
+    options = [f'Constitution (+20 HP, from {player.fighter.max_hp})',
+               f'Strength (+1 attack, from {player.fighter.power})',
+               f'Agility (+1 defense, from {player.fighter.defense})']
+
+    menu(con, root_console, header, options, menu_width)
+
+
+def character_screen(root_console, player, character_screen_width, character_screen_height):
+    window = tdl.Console(character_screen_width, character_screen_height)
+
+    window.draw_rect(0, 0, character_screen_width, character_screen_height, None, fg=colors.white, bg=None)
+
+    window.draw_str(0, 1, 'Character Information')
+    window.draw_str(0, 2, 'Level: {0}'.format(player.level.current_level))
+    window.draw_str(0, 3, 'Experience: {0}'.format(player.level.current_xp))
+    window.draw_str(0, 4, 'Experience to Level: {0}'.format(player.level.experience_to_next_level))
+    window.draw_str(0, 6, 'Maximum HP: {0}'.format(player.fighter.max_hp))
+    window.draw_str(0, 7, 'Attack: {0}'.format(player.fighter.power))
+    window.draw_str(0, 8, 'Defense: {0}'.format(player.fighter.defense))
+
+    x = constants.screen_width // 2 - character_screen_width // 2
+    y = constants.screen_height // 2 - character_screen_height // 2
+    root_console.blit(window, x, y, character_screen_width, character_screen_height, 0, 0)
+
+
 def message_box(con, root_console, header, width):
     menu(con, root_console, header, [], width)
