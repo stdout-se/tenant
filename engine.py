@@ -1,6 +1,4 @@
-# http://rogueliketutorials.com/tdl/11
-# Part: XP points
-# "reward the player with experience points"
+# http://rogueliketutorials.com/tdl/13
 
 import tdl
 from tcod import image_load

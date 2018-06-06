@@ -86,12 +86,12 @@ def place_entities(room, entities, dungeon_level):
         if not any([entity for entity in entities if entity.x == x and entity.y == y]):
             monster_choice = random_choice_from_dict(monster_chances)
             if monster_choice == 'orc':
-                fighter_component = Fighter(hp=10, defense=0, power=3, xp=35)
+                fighter_component = Fighter(hp=20, defense=0, power=4, xp=35)
                 ai_component = BasicMonster()
                 monster = Entity(x, y, 'o', colors.desaturated_green, 'Orc', blocks=True,
                                  render_order=RenderOrder.ACTOR, fighter=fighter_component, ai=ai_component)
             else:
-                fighter_component = Fighter(hp=16, defense=1, power=4, xp=100)
+                fighter_component = Fighter(hp=30, defense=2, power=8, xp=100)
                 ai_component = BasicMonster()
                 monster = Entity(x, y, 'T', colors.darker_green, 'Troll', blocks=True,
                                  render_order=RenderOrder.ACTOR, fighter=fighter_component, ai=ai_component)
@@ -107,13 +107,13 @@ def place_entities(room, entities, dungeon_level):
             item_choice = random_choice_from_dict(item_chances)
 
             if item_choice == 'healing_potion':
-                item_component = Item(use_function=heal, amount=4)
+                item_component = Item(use_function=heal, amount=40)
                 item = Entity(x, y, '!', colors.violet, 'Healing Potion', render_order=RenderOrder.ITEM,
                               item=item_component)
             elif item_choice == 'fireball_scroll':
                 item_component = Item(use_function=cast_fireball, targeting=True, targeting_message=Message(
                     'Left-click a target tile to cast, or use right-click to cancel', colors.light_cyan
-                ), damage=12, radius=3)
+                ), damage=25, radius=3)
                 item = Entity(x, y, '#', colors.red, 'Fireball Scroll', render_order=RenderOrder.ITEM,
                               item=item_component)
             elif item_choice == 'confusion_scroll':
@@ -123,7 +123,7 @@ def place_entities(room, entities, dungeon_level):
                 item = Entity(x, y, '#', colors.light_pink, 'Confusion Scroll', render_order=RenderOrder.ITEM,
                               item=item_component)
             else:
-                item_component = Item(use_function=cast_lightning, damage=20, maximum_range=5)
+                item_component = Item(use_function=cast_lightning, damage=40, maximum_range=5)
                 item = Entity(x, y, '#', colors.yellow, 'Lightning Scroll', render_order=RenderOrder.ITEM,
                               item=item_component)
 
