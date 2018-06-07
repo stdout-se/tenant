@@ -4,10 +4,12 @@ from random import randint
 import colors
 import constants
 from components.ai import BasicMonster
+from components.equippable import Equippable
 from components.fighter import Fighter
 from components.item import Item
 from components.stairs import Stairs
 from entity import Entity
+from equipment_slots import EquipmentSlots
 from game_messages import Message
 from item_functions import heal, cast_lightning, cast_fireball, cast_confuse
 from random_utils import random_choice_from_dict, from_dungeon_level
@@ -73,6 +75,8 @@ def place_entities(room, entities, dungeon_level):
     }
     item_chances = {
         'healing_potion': 35,
+        'sword': from_dungeon_level([[5, 4]], dungeon_level),
+        'shield': from_dungeon_level([[15, 4]], dungeon_level),
         'lightning_scroll': from_dungeon_level([[25, 4]], dungeon_level),
         'fireball_scroll': from_dungeon_level([[25, 6]], dungeon_level),
         'confusion_scroll': from_dungeon_level([[10, 2]], dungeon_level)
@@ -110,6 +114,14 @@ def place_entities(room, entities, dungeon_level):
                 item_component = Item(use_function=heal, amount=40)
                 item = Entity(x, y, '!', colors.violet, 'Healing Potion', render_order=RenderOrder.ITEM,
                               item=item_component)
+            elif item_choice == 'sword':
+                equippable_component = Equippable(EquipmentSlots.MAIN_HAND, power_bonus=3)
+                item = Entity(x, y, '/', colors.sky, 'Sword', render_order=RenderOrder.ITEM,
+                              equippable=equippable_component)
+            elif item_choice == 'shield':
+                equippable_component = Equippable(EquipmentSlots.OFF_HAND, defense_bonus=1)
+                item = Entity(x, y, '[', colors.darker_orange, 'Shield', render_order=RenderOrder.ITEM,
+                              equippable=equippable_component)
             elif item_choice == 'fireball_scroll':
                 item_component = Item(use_function=cast_fireball, targeting=True, targeting_message=Message(
                     'Left-click a target tile to cast, or use right-click to cancel', colors.light_cyan

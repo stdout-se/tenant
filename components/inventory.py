@@ -31,9 +31,15 @@ class Inventory:
         item_component = item_entity.item
 
         if item_component.use_function is None:
-            results.append({
-                Message(f'The {item_entity.name} cannot be used', colors.yellow)
-            })
+            equippable_component = item_entity.equippable
+
+            if equippable_component:
+                results.append({'equip': item_entity})
+
+            else:
+                results.append({
+                    Message(f'The {item_entity.name} cannot be used', colors.yellow)
+                })
         else:
             if item_component.targeting and not (kwargs.get('target_x') or kwargs.get('target_y')):
                 results.append({'targeting': item_entity})
@@ -57,9 +63,13 @@ class Inventory:
         results = []
 
         # noinspection PyUnresolvedReferences
-        item.x = self.owner.x
-        # noinspection PyUnresolvedReferences
-        item.y = self.owner.y
+        owner = self.owner
+
+        if owner.equipment.main_hand == item or owner.equipment.off_hand == item:
+            owner.equipment.toggle_equip(item)
+
+        item.x = owner.x
+        item.y = owner.y
 
         self.remove_item(item)
         results.append({
