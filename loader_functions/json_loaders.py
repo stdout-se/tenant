@@ -1,5 +1,7 @@
 import json
+from zipfile import ZipFile, ZIP_LZMA
 
+from constants import save_filename
 from entity import Entity
 from game_messages import MessageLog
 from game_states import GameStates
@@ -15,13 +17,18 @@ def save_game(player, entities, game_map, message_log, game_state):
         'game_state': game_state.value
     }
 
-    with open('savegame.json', 'w') as save_file:
-        json.dump(data, save_file, indent=4)
+    json_data = json.dumps(data, indent=4)
+
+    with ZipFile(save_filename, 'w', compression=ZIP_LZMA) as savezip:
+        savezip.writestr('savegame.json', data=json_data)
 
 
 def load_game():
-    with open('savegame.json') as save_file:
-        data = json.load(save_file)
+    with ZipFile(save_filename, 'r') as savezip:
+        json_bytes = savezip.read('savegame.json')
+
+    json_data = json_bytes.decode('utf-8')
+    data = json.loads(json_data)
 
     player_index = data['player_index']
     entities_json = data['entities']

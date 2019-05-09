@@ -23,4 +23,6 @@ fov_radius = 10
 level_up_base = 200
 level_up_factor = 150
 
+save_filename = 'savegame.jzip'
+
 debug = False
