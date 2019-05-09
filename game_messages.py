@@ -9,10 +9,48 @@ class Message:
         self.text = text
         self.color = color
 
+    def to_json(self):
+        json_data = {
+            'text': self.text,
+            'color': self.color
+        }
+
+        return json_data
+
+    @staticmethod
+    def from_json(json_data):
+        text = json_data.get('text')
+        color = json_data.get('color')
+
+        if color:
+            message = Message(text, color)
+        else:
+            message = Message(text)
+
+        return message
+
 
 class MessageLog:
     def __init__(self):
         self.messages = []
+
+    def to_json(self):
+        json_data = {
+            'messages': [message.to_json() for message in self.messages]
+        }
+
+        return json_data
+
+    @staticmethod
+    def from_json(json_data):
+        messages_json = json_data.get('messages')
+
+        message_log = MessageLog()
+
+        for message_json in messages_json:
+            message_log.add_message(Message.from_json(message_json))
+
+        return message_log
 
     def add_message(self, message):
         # Split the message if necessary, to multiple lines

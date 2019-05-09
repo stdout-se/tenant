@@ -1,4 +1,4 @@
-# http://rogueliketutorials.com/tdl/13
+# http://rogueliketutorials.com/
 
 import tdl
 from tcod import image_load
@@ -11,7 +11,7 @@ from game_messages import Message
 from game_states import GameStates
 from loader_functions.initialize_new_game import get_game_variables
 from input_handlers import handle_keys, handle_mouse, handle_main_menu
-from loader_functions.data_loaders import load_game, save_game
+from loader_functions.json_loaders import load_game, save_game
 from map_utils import next_floor
 from menus import main_menu, message_box
 from render_functions import render_all, clear_all

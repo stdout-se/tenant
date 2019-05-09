@@ -4,6 +4,17 @@ from game_messages import Message
 
 
 class BasicMonster:
+    def to_json(self):
+        json_data = {
+            'name': self.__class__.__name__
+        }
+
+        return json_data
+
+    @staticmethod
+    def from_json():
+        return BasicMonster()
+
     def take_turn(self, target, game_map, entities):
         results = []
 
@@ -25,6 +36,28 @@ class ConfusedMonster:
     def __init__(self, previous_ai, number_of_turns=10):
         self.previous_ai = previous_ai
         self.number_of_turns = number_of_turns
+
+    def to_json(self):
+        json_data = {
+            'name': self.__class__.__name__,
+            'previous_ai': self.previous_ai.__class__.__name__,
+            'number_of_turns': self.number_of_turns
+        }
+
+        return json_data
+
+    @staticmethod
+    def from_json(json_data, owner):
+        previous_ai_name = json_data.get('previous_ai')
+        number_of_turns = json_data.get('number_of_turns')
+
+        if previous_ai_name == 'BasicMonster':
+            previous_ai = BasicMonster()
+            previous_ai.owner = owner
+        else:
+            previous_ai = None
+
+        return ConfusedMonster(previous_ai, number_of_turns)
 
     # noinspection PyUnusedLocal
     def take_turn(self, target, game_map, entities):

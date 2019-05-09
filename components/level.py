@@ -20,3 +20,20 @@ class Level:
             return True
         else:
             return False
+
+    def to_json(self):
+        json_data = {
+            'current_level': self.current_level,
+            'current_xp': self.current_xp,
+        }
+
+        return json_data
+
+    @staticmethod
+    def from_json(json_data):
+        current_level = json_data.get('current_level')
+        current_xp = json_data.get('current_xp')
+
+        level = Level(current_level, current_xp)
+
+        return level

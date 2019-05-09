@@ -17,11 +17,65 @@ from render_functions import RenderOrder
 
 
 class GameMap(Map):
-    def __init__(self, dungeon_level=1):
+    def __init__(self, dungeon_level=1, explored=None):
         super().__init__(constants.map_width, constants.map_height)
-        self.explored = [[False for _ in range(constants.map_height)] for _ in range(constants.map_width)]
+
+        if explored is not None:
+            self.explored = explored
+        else:
+            self.explored = [[False for _ in range(constants.map_height)] for _ in range(constants.map_width)]
 
         self.dungeon_level = dungeon_level
+
+    def to_json(self):
+        walkable = []
+        transparent = []
+
+        for y in range(self.height):
+            walkable_row = []
+            transparent_row = []
+
+            for x in range(self.width):
+                if self.walkable[x, y]:
+                    walkable_value = True
+                else:
+                    walkable_value = False
+
+                if self.transparent[x, y]:
+                    transparent_value = True
+                else:
+                    transparent_value = False
+
+                walkable_row.append(walkable_value)
+                transparent_row.append(transparent_value)
+
+            walkable.append(walkable_row)
+            transparent.append(transparent_row)
+
+        json_data = {
+            'dungeon_level': self.dungeon_level,
+            'explored': self.explored,
+            'walkable': walkable,
+            'transparent': transparent
+        }
+
+        return json_data
+
+    @staticmethod
+    def from_json(json_data):
+        dungeon_level = json_data.get('dungeon_level')
+        explored = json_data.get('explored')
+        walkable = json_data.get('walkable')
+        transparent = json_data.get('transparent')
+
+        game_map = GameMap(dungeon_level=dungeon_level, explored=explored)
+
+        for y in range(constants.map_height):
+            for x in range(constants.map_width):
+                game_map.walkable[x, y] = walkable[y][x]
+                game_map.transparent[x, y] = transparent[y][x]
+
+        return game_map
 
 
 class Rect:

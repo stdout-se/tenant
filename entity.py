@@ -1,6 +1,13 @@
 import math
 
+from components.ai import BasicMonster, ConfusedMonster
+from components.equipment import Equipment
+from components.equippable import Equippable
+from components.fighter import Fighter
+from components.inventory import Inventory
 from components.item import Item
+from components.level import Level
+from components.stairs import Stairs
 from render_functions import RenderOrder
 
 
@@ -80,6 +87,130 @@ class Entity:
         dy = other.y - self.y
 
         return math.sqrt(dx ** 2 + dy ** 2)
+
+    def to_json(self):
+        if self.fighter:
+            fighter_data = self.fighter.to_json()
+        else:
+            fighter_data = None
+
+        if self.ai:
+            ai_data = self.ai.to_json()
+        else:
+            ai_data = None
+
+        if self.item:
+            item_data = self.item.to_json()
+        else:
+            item_data = None
+
+        if self.inventory:
+            inventory_data = self.inventory.to_json()
+        else:
+            inventory_data = None
+
+        if self.stairs:
+            stairs_data = self.stairs.to_json()
+        else:
+            stairs_data = None
+
+        if self.level:
+            level_data = self.level.to_json()
+        else:
+            level_data = None
+
+        if self.equipment:
+            equipment_data = self.equipment.to_json()
+        else:
+            equipment_data = None
+
+        if self.equippable:
+            equippable_data = self.equippable.to_json()
+        else:
+            equippable_data = None
+
+        json_data = {
+            'x': self.x,
+            'y': self.y,
+            'char': self.char,
+            'color': self.color,
+            'name': self.name,
+            'blocks': self.blocks,
+            'render_order': self.render_order.value,
+            'fighter': fighter_data,
+            'ai': ai_data,
+            'item': item_data,
+            'inventory': inventory_data,
+            'stairs': stairs_data,
+            'level': level_data,
+            'equipment': equipment_data,
+            'equippable': equippable_data
+        }
+
+        return json_data
+
+    @staticmethod
+    def from_json(json_data):
+        x = json_data.get('x')
+        y = json_data.get('y')
+        char = json_data.get('char')
+        color = json_data.get('color')
+        name = json_data.get('name')
+        blocks = json_data.get('blocks', False)
+        render_order = RenderOrder(json_data.get('render_order'))
+        fighter_json = json_data.get('fighter')
+        ai_json = json_data.get('ai')
+        item_json = json_data.get('item')
+        inventory_json = json_data.get('inventory')
+        stairs_json = json_data.get('stairs')
+        level_json = json_data.get('level')
+        equipment_json = json_data.get('equipment')
+        equippable_json = json_data.get('equippable')
+
+        entity = Entity(x, y, char, color, name, blocks, render_order)
+
+        if fighter_json:
+            entity.fighter = Fighter.from_json(fighter_json)
+            entity.fighter.owner = entity
+
+        if ai_json:
+            name = ai_json.get('name')
+            if name == BasicMonster.__name__:
+                ai = BasicMonster.from_json()
+            elif name == ConfusedMonster.__name__:
+                ai = ConfusedMonster.from_json(ai_json, entity)
+            else:
+                ai = None
+
+            if ai:
+                entity.ai = ai
+                entity.ai.owner = entity
+
+        if item_json:
+            entity.item = Item.from_json(item_json)
+            entity.item.owner = entity
+
+        if inventory_json:
+            entity.inventory = Inventory.from_json(inventory_json)
+            entity.inventory.owner = entity
+
+        if stairs_json:
+            entity.stairs = Stairs.from_json(stairs_json)
+            entity.stairs.owner = entity
+
+        if level_json:
+            entity.level = Level.from_json(level_json)
+            entity.level.owner = entity
+
+        if equipment_json:
+            entity.equipment = Equipment.from_json(equipment_json)
+            entity.equipment.owner = entity
+
+        if equippable_json:
+            entity.equippable = Equippable.from_json(equippable_json)
+            entity.equippable.owner = entity
+
+        return entity
 
 
 def get_blocking_entities_at_location(entities, destination_x, destination_y):

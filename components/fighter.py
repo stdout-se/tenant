@@ -79,3 +79,27 @@ class Fighter:
             })
 
         return results
+
+    def to_json(self):
+        json_data = {
+            'base_max_hp': self.base_max_hp,
+            'hp': self.hp,
+            'base_defense': self.base_defense,
+            'base_power': self.base_power,
+            'xp': self.xp
+        }
+
+        return json_data
+
+    @staticmethod
+    def from_json(json_data):
+        base_max_hp = json_data.get('base_max_hp')
+        hp = json_data.get('hp')
+        base_defense = json_data.get('base_defense')
+        base_power = json_data.get('base_power')
+        xp = json_data.get('xp')
+
+        fighter = Fighter(base_max_hp, base_defense, base_power, xp)
+        fighter.hp = hp
+
+        return fighter
