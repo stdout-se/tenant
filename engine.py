@@ -1,7 +1,6 @@
 # http://rogueliketutorials.com/
 
-import tdl
-from tcod import image_load
+import tcod as libtcod
 
 import colors
 import constants
@@ -18,11 +17,13 @@ from render_functions import render_all, clear_all
 
 
 def main():
-    tdl.set_font('terminal16x16_gs_ro.png', greyscale=True, altLayout=False)
+    libtcod.console_set_custom_font('terminal16x16_gs_ro.png',
+                                    libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_ASCII_INROW)
 
-    root_console = tdl.init(constants.screen_width, constants.screen_height, title='Tenant')
-    con = tdl.Console(constants.screen_width, constants.screen_height)
-    panel = tdl.Console(constants.screen_width, constants.panel_height)
+    libtcod.console_init_root(constants.screen_width, constants.screen_height, 'Tenant', False)
+
+    con = libtcod.console_new(constants.screen_width, constants.screen_height)
+    panel = libtcod.console_new(constants.screen_width, constants.panel_height)
 
     player = None
     entities = []
@@ -33,25 +34,23 @@ def main():
     show_main_menu = True
     show_load_error_message = False
 
-    main_menu_background_image = image_load('menu_background.png')
+    main_menu_background_image = libtcod.image_load('menu_background.png')
 
-    while not tdl.event.is_window_closed():
-        for event in tdl.event.get():
-            if event.type == 'KEYDOWN':
-                user_input = event
-                break
-        else:
-            user_input = None
+    key = libtcod.Key()
+    mouse = libtcod.Mouse()
+
+    while not libtcod.console_is_window_closed():
+        libtcod.sys_check_for_event(libtcod.EVENT_KEY_PRESS | libtcod.EVENT_MOUSE, key, mouse)
 
         if show_main_menu:
-            main_menu(con, root_console, main_menu_background_image)
+            main_menu(con, main_menu_background_image)
 
             if show_load_error_message:
-                message_box(con, root_console, 'No savegame to load', 50)
+                message_box(con, 'No savegame to load', 50)
 
-            tdl.flush()
+            libtcod.console_flush()
 
-            action = handle_main_menu(user_input)
+            action = handle_main_menu(key)
 
             new_game = action.get('new_game')
             load_saved_game = action.get('load_game')
@@ -73,56 +72,44 @@ def main():
             elif exit_game:
                 break
         else:
-            root_console.clear()
+            libtcod.console_clear(con)
             con.clear()
             panel.clear()
-            play_game(player, entities, game_map, message_log, game_state, root_console, con, panel)
+            play_game(player, entities, game_map, message_log, game_state, con, panel)
+
             show_main_menu = True
 
 
-def play_game(player, entities, game_map, message_log, game_state, root_console, con, panel):
+def play_game(player, entities, game_map, message_log, game_state, con, panel):
     fov_recompute = True
 
     mouse_coordinates = (0, 0)
+
+    key = libtcod.Key()
+    mouse = libtcod.Mouse()
 
     previous_game_state = game_state
 
     targeting_item = None
 
-    while not tdl.event.is_window_closed():
+    while not libtcod.console_is_window_closed():
+        libtcod.sys_check_for_event(libtcod.EVENT_KEY_PRESS | libtcod.EVENT_MOUSE, key, mouse)
+
         if fov_recompute:
             game_map.compute_fov(player.x, player.y,
                                  fov=constants.fov_algorithm,
                                  radius=constants.fov_radius,
                                  light_walls=constants.fov_light_walls)
 
-        render_all(con, panel, entities, player, game_map, fov_recompute, root_console, message_log, mouse_coordinates,
-                   game_state)
-        tdl.flush()
+        render_all(con, panel, entities, player, game_map, fov_recompute, message_log, mouse_coordinates, game_state)
+        libtcod.console_flush()
 
         clear_all(con, entities)
 
         fov_recompute = False
 
-        for event in tdl.event.get():
-            if event.type == 'KEYDOWN':
-                user_input = event
-                break
-            elif event.type == 'MOUSEMOTION':
-                mouse_coordinates = event.cell
-            elif event.type == 'MOUSEDOWN':
-                user_mouse_input = event
-                break
-        else:
-            user_input = None
-            user_mouse_input = None
-
-        # noinspection PyUnboundLocalVariable
-        if not (user_input or user_mouse_input):
-            continue
-
-        action = handle_keys(user_input, game_state)
-        mouse_action = handle_mouse(user_mouse_input)
+        action = handle_keys(key, game_state)
+        mouse_action = handle_mouse(mouse)
 
         move = action.get('move')
         wait = action.get('wait')
@@ -235,7 +222,7 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
                 return True
 
         if fullscreen:
-            tdl.set_fullscreen(not tdl.get_fullscreen())
+            libtcod.console_set_fullscreen(not libtcod.console_is_fullscreen())
 
         for player_turn_result in player_turn_results:
             message = player_turn_result.get('message')
