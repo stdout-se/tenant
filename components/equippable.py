@@ -10,7 +10,7 @@ class Equippable:
 
     def to_json(self):
         json_data = {
-            'slot': self.slot.name,
+            'slot': self.slot.value,
             'power_bonus': self.power_bonus,
             'defense_bonus': self.defense_bonus,
             'max_hp_bonus': self.max_hp_bonus
@@ -21,12 +21,11 @@ class Equippable:
     @staticmethod
     def from_json(json_data):
         slot_json = json_data.get('slot')
-
         power_bonus = json_data.get('power_bonus')
         defense_bonus = json_data.get('defense_bonus')
         max_hp_bonux = json_data.get('max_hp_bonus')
 
-        slot = EquipmentSlots[slot_json]
+        slot = EquipmentSlots(slot_json)
 
         equippable = Equippable(slot, power_bonus, defense_bonus, max_hp_bonux)
         return equippable

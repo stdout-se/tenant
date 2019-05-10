@@ -18,7 +18,7 @@ from render_functions import render_all, clear_all
 
 
 def main():
-    tdl.set_font('arial10x10.png', greyscale=True, altLayout=True)
+    tdl.set_font('terminal16x16_gs_ro.png', greyscale=True, altLayout=False)
 
     root_console = tdl.init(constants.screen_width, constants.screen_height, title='Tenant')
     con = tdl.Console(constants.screen_width, constants.screen_height)
