@@ -120,9 +120,18 @@ class Entity:
             level_data = None
 
         if self.equipment:
-            equipment_data = self.equipment.to_json()
+            if self.equipment.main_hand:
+                equipped_main_index = self.inventory.items.index(self.equipment.main_hand)
+            else:
+                equipped_main_index = None
+
+            if self.equipment.off_hand:
+                equipped_off_index = self.inventory.items.index(self.equipment.off_hand)
+            else:
+                equipped_off_index = None
         else:
-            equipment_data = None
+            equipped_main_index = None
+            equipped_off_index = None
 
         if self.equippable:
             equippable_data = self.equippable.to_json()
@@ -143,7 +152,8 @@ class Entity:
             'inventory': inventory_data,
             'stairs': stairs_data,
             'level': level_data,
-            'equipment': equipment_data,
+            'equipped_main_index': equipped_main_index,
+            'equipped_off_index': equipped_off_index,
             'equippable': equippable_data
         }
 
@@ -164,7 +174,8 @@ class Entity:
         inventory_json = json_data.get('inventory')
         stairs_json = json_data.get('stairs')
         level_json = json_data.get('level')
-        equipment_json = json_data.get('equipment')
+        equipped_main_index_json = json_data.get('equipped_main_index')
+        equipped_off_index_json = json_data.get('equipped_off_index')
         equippable_json = json_data.get('equippable')
 
         entity = Entity(x, y, char, color, name, blocks, render_order)
@@ -202,9 +213,18 @@ class Entity:
             entity.level = Level.from_json(level_json)
             entity.level.owner = entity
 
-        if equipment_json:
-            entity.equipment = Equipment.from_json(equipment_json)
-            entity.equipment.owner = entity
+        if equipped_main_index_json is not None:
+            equipped_main = entity.inventory.items[equipped_main_index_json]
+        else:
+            equipped_main = None
+
+        if equipped_off_index_json is not None:
+            equipped_off = entity.inventory.items[equipped_off_index_json]
+        else:
+            equipped_off = None
+
+        entity.equipment = Equipment(equipped_main, equipped_off)
+        entity.equipment.owner = entity
 
         if equippable_json:
             entity.equippable = Equippable.from_json(equippable_json)
