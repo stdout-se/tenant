@@ -89,54 +89,43 @@ class Entity:
         return math.sqrt(dx ** 2 + dy ** 2)
 
     def to_json(self):
+        fighter_data = None
         if self.fighter:
             fighter_data = self.fighter.to_json()
-        else:
-            fighter_data = None
 
+        ai_data = None
         if self.ai:
             ai_data = self.ai.to_json()
-        else:
-            ai_data = None
 
+        item_data = None
         if self.item:
             item_data = self.item.to_json()
-        else:
-            item_data = None
 
+        inventory_data = None
         if self.inventory:
             inventory_data = self.inventory.to_json()
-        else:
-            inventory_data = None
 
+        stairs_data = None
         if self.stairs:
             stairs_data = self.stairs.to_json()
-        else:
-            stairs_data = None
 
+        level_data = None
         if self.level:
             level_data = self.level.to_json()
-        else:
-            level_data = None
 
+        equipped_main_index = None
+        equipped_off_index = None
         if self.equipment:
+            # Save the index of the equipped items, from where they are in the inventory
             if self.equipment.main_hand:
                 equipped_main_index = self.inventory.items.index(self.equipment.main_hand)
-            else:
-                equipped_main_index = None
 
             if self.equipment.off_hand:
                 equipped_off_index = self.inventory.items.index(self.equipment.off_hand)
-            else:
-                equipped_off_index = None
-        else:
-            equipped_main_index = None
-            equipped_off_index = None
 
+        equippable_data = None
         if self.equippable:
             equippable_data = self.equippable.to_json()
-        else:
-            equippable_data = None
 
         json_data = {
             'x': self.x,
@@ -186,12 +175,11 @@ class Entity:
 
         if ai_json:
             name = ai_json.get('name')
+            ai = None
             if name == BasicMonster.__name__:
                 ai = BasicMonster.from_json()
             elif name == ConfusedMonster.__name__:
                 ai = ConfusedMonster.from_json(ai_json, entity)
-            else:
-                ai = None
 
             if ai:
                 entity.ai = ai
@@ -213,15 +201,13 @@ class Entity:
             entity.level = Level.from_json(level_json)
             entity.level.owner = entity
 
+        equipped_main = None
+        equipped_off = None
         if equipped_main_index_json is not None:
             equipped_main = entity.inventory.items[equipped_main_index_json]
-        else:
-            equipped_main = None
 
         if equipped_off_index_json is not None:
             equipped_off = entity.inventory.items[equipped_off_index_json]
-        else:
-            equipped_off = None
 
         entity.equipment = Equipment(equipped_main, equipped_off)
         entity.equipment.owner = entity
