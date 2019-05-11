@@ -31,7 +31,7 @@ class Item:
         return json_data
 
     @staticmethod
-    def from_json(json_data):
+    def from_json(json_data: dict):
         use_function_name = json_data.get('use_function')
         targeting = json_data.get('targeting')
         targeting_message_json = json_data.get('targeting_message')

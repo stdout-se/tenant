@@ -1,11 +1,12 @@
 import textwrap
+from typing import Tuple
 
 import colors
 import constants
 
 
 class Message:
-    def __init__(self, text, color=colors.white):
+    def __init__(self, text: str, color: Tuple[int, int, int] = colors.white):
         self.text = text
         self.color = color
 
@@ -18,7 +19,7 @@ class Message:
         return json_data
 
     @staticmethod
-    def from_json(json_data):
+    def from_json(json_data: dict):
         text = json_data.get('text')
         color = json_data.get('color')
 
@@ -34,7 +35,7 @@ class MessageLog:
     def __init__(self):
         self.messages = []
 
-    def add_message(self, message):
+    def add_message(self, message: Message):
         # Split the message if necessary, to multiple lines
         new_msg_lines = textwrap.wrap(message.text, constants.message_width)
 
@@ -54,7 +55,7 @@ class MessageLog:
         return json_data
 
     @staticmethod
-    def from_json(json_data):
+    def from_json(json_data: dict):
         messages_json = json_data.get('messages')
 
         message_log = MessageLog()

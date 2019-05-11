@@ -1,10 +1,11 @@
 import tcod as libtcod
+from typing import List
 
 import colors
 import constants
 
 
-def menu(con, header, options, width):
+def menu(con, header: str, options: List[str], width: int):
     if len(options) > 26:
         raise ValueError('Cannot have more than 26 options')
 
@@ -33,7 +34,7 @@ def menu(con, header, options, width):
     libtcod.console_blit(window, 0, 0, width, height, 0, x, y, 1.0, 0.7)
 
 
-def inventory_menu(con, header, player, inventory_width):
+def inventory_menu(con, header: str, player, inventory_width: str):
     # Show a menu with each item of the inventory as an option
     if len(player.inventory.items) == 0:
         options = ['Inventory is empty']
@@ -66,7 +67,7 @@ def main_menu(con, background_image):
     menu(con, '', ['Play a new game', 'Continue last game', 'Quit'], 24)
 
 
-def level_up_menu(con, header, player, menu_width):
+def level_up_menu(con, header: str, player, menu_width: int):
     options = [f'Constitution (+20 HP, from {player.fighter.max_hp})',
                f'Strength (+1 attack, from {player.fighter.power})',
                f'Agility (+1 defense, from {player.fighter.defense})']
@@ -74,7 +75,7 @@ def level_up_menu(con, header, player, menu_width):
     menu(con, header, options, menu_width)
 
 
-def character_screen(player, character_screen_width, character_screen_height):
+def character_screen(player, character_screen_width: int, character_screen_height: int):
     window = libtcod.console_new(character_screen_width, character_screen_height)
 
     libtcod.console_set_default_foreground(window, colors.white)
@@ -100,5 +101,5 @@ def character_screen(player, character_screen_width, character_screen_height):
     libtcod.console_blit(window, 0, 0, character_screen_width, character_screen_height, 0, x, y, 1.0, 0.7)
 
 
-def message_box(con, header, width):
+def message_box(con, header: str, width: int):
     menu(con, header, [], width)

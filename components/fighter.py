@@ -3,7 +3,7 @@ from game_messages import Message
 
 # noinspection PyUnresolvedReferences
 class Fighter:
-    def __init__(self, hp, defense, power, xp=0):
+    def __init__(self, hp: int, defense: int, power: int, xp: int = 0):
         self.base_max_hp = hp
         self.hp = hp
         self.base_defense = defense
@@ -41,7 +41,7 @@ class Fighter:
 
         return self.base_defense + bonus
 
-    def take_damage(self, amount):
+    def take_damage(self, amount: int):
         results = []
 
         self.hp -= amount
@@ -54,13 +54,13 @@ class Fighter:
 
         return results
 
-    def heal(self, amount):
+    def heal(self, amount: int):
         self.hp += amount
 
         if self.hp > self.max_hp:
             self.hp = self.max_hp
 
-    def attack(self, target):
+    def attack(self, target: int):
         results = []
 
         damage = self.power - target.fighter.defense
@@ -92,7 +92,7 @@ class Fighter:
         return json_data
 
     @staticmethod
-    def from_json(json_data):
+    def from_json(json_data: dict):
         base_max_hp = json_data.get('base_max_hp')
         hp = json_data.get('hp')
         base_defense = json_data.get('base_defense')

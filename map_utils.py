@@ -62,7 +62,7 @@ class GameMap(Map):
         return json_data
 
     @staticmethod
-    def from_json(json_data):
+    def from_json(json_data: dict):
         dungeon_level = json_data.get('dungeon_level')
         explored = json_data.get('explored')
         walkable = json_data.get('walkable')
@@ -79,7 +79,7 @@ class GameMap(Map):
 
 
 class Rect:
-    def __init__(self, x, y, w, h):
+    def __init__(self, x: int, y: int, w: int, h: int):
         self.x1 = x
         self.y1 = y
         self.x2 = x + w
@@ -104,19 +104,19 @@ def create_room(game_map, room):
             game_map.transparent[x, y] = True
 
 
-def create_h_tunnel(game_map, x1, x2, y):
+def create_h_tunnel(game_map, x1: int, x2: int, y: int):
     for x in range(min(x1, x2), max(x1, x2) + 1):
         game_map.walkable[x, y] = True
         game_map.transparent[x, y] = True
 
 
-def create_v_tunnel(game_map, y1, y2, x):
+def create_v_tunnel(game_map, y1: int, y2: int, x: int):
     for y in range(min(y1, y2), max(y1, y2) + 1):
         game_map.walkable[x, y] = True
         game_map.transparent[x, y] = True
 
 
-def place_entities(room, entities, dungeon_level):
+def place_entities(room, entities, dungeon_level: int):
     max_monsters_per_room = from_dungeon_level([[2, 1], [3, 4], [5, 6]], dungeon_level)
     max_items_per_room = from_dungeon_level([[1, 1], [2, 4]], dungeon_level)
 
@@ -264,7 +264,7 @@ def make_map(game_map, player, entities):
     entities.append(down_stairs)
 
 
-def next_floor(player, message_log, dungeon_level):
+def next_floor(player, message_log, dungeon_level: int):
     game_map = GameMap(dungeon_level)
     entities = [player]
 

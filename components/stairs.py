@@ -1,5 +1,5 @@
 class Stairs:
-    def __init__(self, floor):
+    def __init__(self, floor: int):
         self.floor = floor  # Which floor does this stair lead to?
 
     def to_json(self):
@@ -10,7 +10,7 @@ class Stairs:
         return json_data
 
     @staticmethod
-    def from_json(json_data):
+    def from_json(json_data: dict):
         floor = json_data.get('floor')
 
         stairs = Stairs(floor)

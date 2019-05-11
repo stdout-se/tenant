@@ -3,7 +3,7 @@ import tcod as libtcod
 from game_states import GameStates
 
 
-def handle_keys(key, game_state):
+def handle_keys(key: libtcod.Key, game_state):
     if key:
         if game_state == GameStates.PLAYERS_TURN:
             return handle_player_turn_keys(key)
@@ -21,7 +21,7 @@ def handle_keys(key, game_state):
     return {}
 
 
-def handle_player_turn_keys(key):
+def handle_player_turn_keys(key: libtcod.Key):
     key_char = chr(key.c)
 
     # Movement keys
@@ -64,17 +64,18 @@ def handle_player_turn_keys(key):
     return {}
 
 
-def handle_targeting_keys(key):
+def handle_targeting_keys(key: libtcod.Key):
     if key.vk == libtcod.KEY_ESCAPE:
         return {'exit': True}
 
     return {}
 
 
-def handle_player_dead_keys(key):
+def handle_player_dead_keys(key: libtcod.Key):
     key_char = chr(key.c)
 
     if key_char == 'i':
+        # Show inventory screen
         return{'show_inventory': True}
 
     if key.vk == libtcod.KEY_ENTER and key.lalt:
@@ -89,7 +90,7 @@ def handle_player_dead_keys(key):
     return {}
 
 
-def handle_inventory_keys(key):
+def handle_inventory_keys(key: libtcod.Key):
     if not key.c:
         return {}
 
@@ -110,7 +111,7 @@ def handle_inventory_keys(key):
     return {}
 
 
-def handle_main_menu(key):
+def handle_main_menu(key: libtcod.Key):
     if key:
         key_char = chr(key.c)
 
@@ -124,7 +125,7 @@ def handle_main_menu(key):
     return {}
 
 
-def handle_level_up_menu(key):
+def handle_level_up_menu(key: libtcod.Key):
     if key:
         key_char = chr(key.c)
 
@@ -138,14 +139,14 @@ def handle_level_up_menu(key):
     return {}
 
 
-def handle_character_screen(key):
+def handle_character_screen(key: libtcod.Key):
     if key.vk == libtcod.KEY_ESCAPE:
         return {'exit': True}
 
     return {}
 
 
-def handle_mouse(mouse):
+def handle_mouse(mouse: libtcod.Mouse):
     if mouse:
         (x, y) = (mouse.cx, mouse.cy)
 

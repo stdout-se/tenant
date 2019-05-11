@@ -3,7 +3,7 @@ from game_messages import Message
 
 
 class Inventory:
-    def __init__(self, capacity):
+    def __init__(self, capacity: int):
         self.capacity = capacity
         self.items = []
 
@@ -88,7 +88,7 @@ class Inventory:
         return json_data
 
     @staticmethod
-    def from_json(json_data):
+    def from_json(json_data: dict):
         from entity import Entity
 
         capacity = json_data.get('capacity')

@@ -1,4 +1,5 @@
 import math
+from typing import Tuple
 
 from components.ai import BasicMonster, ConfusedMonster
 from components.equipment import Equipment
@@ -15,8 +16,10 @@ class Entity:
     """
     A generic object to represent players, enemies, items, etc.
     """
-    def __init__(self, x, y, char, color, name, blocks=False, render_order=RenderOrder.CORPSE, fighter=None, ai=None,
-                 item=None, inventory=None, stairs=None, level=None, equipment=None, equippable=None):
+    def __init__(self, x: int, y: int, char: str, color: Tuple[int, int, int], name: str, blocks: bool = False,
+                 render_order: RenderOrder = RenderOrder.CORPSE, fighter: Fighter = None, ai=None, item: Item = None,
+                 inventory: Inventory = None, stairs: Stairs = None, level: Level = None, equipment: Equipment = None,
+                 equippable: Equippable = None):
         self.x = x
         self.y = y
         self.char = char
@@ -63,12 +66,12 @@ class Entity:
                 self.item = item
                 self.item.owner = self
 
-    def move(self, dx, dy):
+    def move(self, dx: int, dy: int):
         # Move the entity by a given amount
         self.x += dx
         self.y += dy
 
-    def move_towards(self, target_x, target_y, game_map, entities):
+    def move_towards(self, target_x: int, target_y: int, game_map, entities):
         path = game_map.compute_path(self.x, self.y, target_x, target_y)
 
         if path:
@@ -79,7 +82,7 @@ class Entity:
                     get_blocking_entities_at_location(entities, self.x + dx, self.y + dy):
                 self.move(dx, dy)
 
-    def distance(self, x, y):
+    def distance(self, x: int, y: int):
         return math.sqrt((x - self.x) ** 2 + (y - self.y) ** 2)
 
     def distance_to(self, other):
@@ -149,7 +152,7 @@ class Entity:
         return json_data
 
     @staticmethod
-    def from_json(json_data):
+    def from_json(json_data: dict):
         x = json_data.get('x')
         y = json_data.get('y')
         char = json_data.get('char')
@@ -219,7 +222,7 @@ class Entity:
         return entity
 
 
-def get_blocking_entities_at_location(entities, destination_x, destination_y):
+def get_blocking_entities_at_location(entities, destination_x: int, destination_y: int):
     for entity in entities:
         if entity.blocks and entity.x == destination_x and entity.y == destination_y:
             return entity

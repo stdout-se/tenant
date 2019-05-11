@@ -1,5 +1,6 @@
 import tcod as libtcod
 from enum import Enum
+from typing import Tuple
 
 import colors
 import constants
@@ -14,7 +15,7 @@ class RenderOrder(Enum):
     ACTOR = 4
 
 
-def get_names_under_mouse(mouse_coordinates, entities, game_map):
+def get_names_under_mouse(mouse_coordinates: Tuple[int, int], entities, game_map):
     x, y = mouse_coordinates
 
     names = [entity.name for entity in entities
@@ -24,7 +25,8 @@ def get_names_under_mouse(mouse_coordinates, entities, game_map):
     return names.capitalize()
 
 
-def render_bar(panel, x, y, total_width, name, value, maximum, bar_color, back_color, string_color):
+def render_bar(panel, x: int, y: int, total_width: int, name: str, value: int, maximum: int,
+               bar_color: Tuple[int, int, int], back_color: Tuple[int, int, int], string_color: Tuple[int, int, int]):
     # Render a bar (HP, experience, etc). First calculate the width of the bar
     bar_width = int(float(value) / maximum * total_width)
 
@@ -43,7 +45,8 @@ def render_bar(panel, x, y, total_width, name, value, maximum, bar_color, back_c
     libtcod.console_print_ex(panel, x + total_width // 2, y, libtcod.BKGND_NONE, libtcod.CENTER, text)
 
 
-def render_all(con, panel, entities, player, game_map, fov_recompute, message_log, mouse_coordinates, game_state):
+def render_all(con, panel, entities, player, game_map, fov_recompute: bool, message_log,
+               mouse_coordinates: Tuple[int, int], game_state):
     # Draw all the tiles in the game map
     if fov_recompute:
         for x, y, in game_map:

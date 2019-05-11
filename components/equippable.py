@@ -2,7 +2,7 @@ from equipment_slots import EquipmentSlots
 
 
 class Equippable:
-    def __init__(self, slot, power_bonus=0, defense_bonus=0, max_hp_bonus=0):
+    def __init__(self, slot: EquipmentSlots, power_bonus: int = 0, defense_bonus: int = 0, max_hp_bonus: int = 0):
         self.slot = slot
         self.power_bonus = power_bonus
         self.defense_bonus = defense_bonus
@@ -19,7 +19,7 @@ class Equippable:
         return json_data
 
     @staticmethod
-    def from_json(json_data):
+    def from_json(json_data: dict):
         slot_json = json_data.get('slot')
         power_bonus = json_data.get('power_bonus')
         defense_bonus = json_data.get('defense_bonus')

@@ -70,7 +70,7 @@ class ConfusedMonster:
         return json_data
 
     @staticmethod
-    def from_json(json_data, owner):
+    def from_json(json_data: dict, owner):
         previous_ai_name = json_data.get('previous_ai')
         number_of_turns = json_data.get('number_of_turns')
 
