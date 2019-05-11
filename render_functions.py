@@ -72,6 +72,7 @@ def render_all(con, panel, entities, player, game_map, fov_recompute: bool, mess
     for entity in entities_in_render_order:
         draw_entity(con, entity, game_map)
 
+    # noinspection PyTypeChecker
     libtcod.console_blit(con, 0, 0, constants.screen_width, constants.screen_height, 0, 0, 0)
 
     libtcod.console_set_default_background(panel, colors.black)
@@ -94,6 +95,7 @@ def render_all(con, panel, entities, player, game_map, fov_recompute: bool, mess
     libtcod.console_print_ex(panel, 1, 0, libtcod.BKGND_NONE, libtcod.LEFT,
                              get_names_under_mouse(mouse_coordinates, entities, game_map))
 
+    # noinspection PyTypeChecker
     libtcod.console_blit(panel, 0, 0, constants.screen_width, constants.panel_height, 0, 0, constants.panel_y)
 
     if game_state in (GameStates.SHOW_INVENTORY, GameStates.DROP_INVENTORY):

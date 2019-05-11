@@ -31,6 +31,7 @@ def menu(con, header: str, options: List[str], width: int):
     # Blit the contents of "window" to the root console
     x = constants.screen_width // 2 - width // 2
     y = constants.screen_height // 2 - height // 2
+    # noinspection PyTypeChecker
     libtcod.console_blit(window, 0, 0, width, height, 0, x, y, 1.0, 0.7)
 
 
@@ -53,14 +54,18 @@ def inventory_menu(con, header: str, player, inventory_width: int):
 
 
 def main_menu(con, background_image):
+    # noinspection PyTypeChecker
     libtcod.image_blit_2x(background_image, 0, 0, 0)
 
     title = 'TENANT SIMULATOR'
+    # noinspection PyTypeChecker
     libtcod.console_set_default_foreground(0, colors.light_yellow)
+    # noinspection PyTypeChecker
     libtcod.console_print_ex(0, constants.screen_width // 2, constants.screen_height // 2 - 4, libtcod.BKGND_NONE,
                              libtcod.CENTER, title)
 
     title = 'By name'
+    # noinspection PyTypeChecker
     libtcod.console_print_ex(0, constants.screen_width // 2, constants.screen_height - 2, libtcod.BKGND_NONE,
                              libtcod.CENTER, title)
 
@@ -98,6 +103,7 @@ def character_screen(player, character_screen_width: int, character_screen_heigh
 
     x = constants.screen_width // 2 - character_screen_width // 2
     y = constants.screen_height // 2 - character_screen_height // 2
+    # noinspection PyTypeChecker
     libtcod.console_blit(window, 0, 0, character_screen_width, character_screen_height, 0, x, y, 1.0, 0.7)
 
 
