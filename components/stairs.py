@@ -9,10 +9,8 @@ class Stairs:
 
         return json_data
 
-    @staticmethod
-    def from_json(json_data: dict):
+    @classmethod
+    def from_json(cls, json_data: dict):
         floor = json_data.get('floor')
 
-        stairs = Stairs(floor)
-
-        return stairs
+        return cls(floor)

@@ -1,13 +1,32 @@
 from random import randint
+from typing import List
 
 from game_messages import Message
 
 
-class BasicMonster:
+class BaseAI:
+    def __init__(self):
+        self.owner = None
+
+    def take_turn(self, target, game_map, entities) -> List:
+        raise NotImplementedError
+
+    def to_json(self):
+        json_data = {
+            'name': self.__class__.__name__
+        }
+
+        return json_data
+
+    @classmethod
+    def from_json(cls, *args, **kwargs):
+        return cls()
+
+
+class BasicMonster(BaseAI):
     def take_turn(self, target, game_map, entities):
         results = []
 
-        # noinspection PyUnresolvedReferences
         monster = self.owner
 
         if game_map.fov[monster.x, monster.y]:
@@ -20,28 +39,17 @@ class BasicMonster:
 
         return results
 
-    def to_json(self):
-        json_data = {
-            'name': self.__class__.__name__
-        }
 
-        return json_data
-
-    @staticmethod
-    def from_json():
-        return BasicMonster()
-
-
-class ConfusedMonster:
+class ConfusedMonster(BaseAI):
     def __init__(self, previous_ai, number_of_turns=10):
+        super().__init__()
+
         self.previous_ai = previous_ai
         self.number_of_turns = number_of_turns
 
-    # noinspection PyUnusedLocal
     def take_turn(self, target, game_map, entities):
         results = []
 
-        # noinspection PyUnresolvedReferences
         monster = self.owner
 
         if self.number_of_turns > 0:
@@ -69,8 +77,8 @@ class ConfusedMonster:
 
         return json_data
 
-    @staticmethod
-    def from_json(json_data: dict, owner):
+    @classmethod
+    def from_json(cls, json_data: dict, owner):
         previous_ai_name = json_data.get('previous_ai')
         number_of_turns = json_data.get('number_of_turns')
 
@@ -80,4 +88,4 @@ class ConfusedMonster:
         else:
             previous_ai = None
 
-        return ConfusedMonster(previous_ai, number_of_turns)
+        return cls(previous_ai, number_of_turns)

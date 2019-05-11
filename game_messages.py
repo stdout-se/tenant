@@ -18,15 +18,15 @@ class Message:
 
         return json_data
 
-    @staticmethod
-    def from_json(json_data: dict):
+    @classmethod
+    def from_json(cls, json_data: dict):
         text = json_data.get('text')
         color = json_data.get('color')
 
         if color:
-            message = Message(text, color)
+            message = cls(text, color)
         else:
-            message = Message(text)
+            message = cls(text)
 
         return message
 
@@ -54,11 +54,11 @@ class MessageLog:
 
         return json_data
 
-    @staticmethod
-    def from_json(json_data: dict):
+    @classmethod
+    def from_json(cls, json_data: dict):
         messages_json = json_data.get('messages')
 
-        message_log = MessageLog()
+        message_log = cls()
 
         for message_json in messages_json:
             message_log.add_message(Message.from_json(message_json))

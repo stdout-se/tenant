@@ -30,8 +30,8 @@ class Item:
 
         return json_data
 
-    @staticmethod
-    def from_json(json_data: dict):
+    @classmethod
+    def from_json(cls, json_data: dict):
         use_function_name = json_data.get('use_function')
         targeting = json_data.get('targeting')
         targeting_message_json = json_data.get('targeting_message')
@@ -46,6 +46,5 @@ class Item:
             targeting_message = Message.from_json(targeting_message_json)
         else:
             targeting_message = None
-        item = Item(use_function, targeting, targeting_message, **function_kwargs)
 
-        return item
+        return cls(use_function, targeting, targeting_message, **function_kwargs)

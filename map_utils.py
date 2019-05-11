@@ -61,14 +61,14 @@ class GameMap(Map):
 
         return json_data
 
-    @staticmethod
-    def from_json(json_data: dict):
+    @classmethod
+    def from_json(cls, json_data: dict):
         dungeon_level = json_data.get('dungeon_level')
         explored = json_data.get('explored')
         walkable = json_data.get('walkable')
         transparent = json_data.get('transparent')
 
-        game_map = GameMap(dungeon_level=dungeon_level, explored=explored)
+        game_map = cls(dungeon_level=dungeon_level, explored=explored)
 
         for y in range(constants.map_height):
             for x in range(constants.map_width):

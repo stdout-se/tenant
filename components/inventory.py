@@ -87,8 +87,8 @@ class Inventory:
 
         return json_data
 
-    @staticmethod
-    def from_json(json_data: dict):
+    @classmethod
+    def from_json(cls, json_data: dict):
         from entity import Entity
 
         capacity = json_data.get('capacity')
@@ -96,7 +96,7 @@ class Inventory:
 
         items = [Entity.from_json(item_json) for item_json in items_json]
 
-        inventory = Inventory(capacity)
+        inventory = cls(capacity)
         inventory.items = items
 
         return inventory

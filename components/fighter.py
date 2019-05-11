@@ -91,15 +91,15 @@ class Fighter:
 
         return json_data
 
-    @staticmethod
-    def from_json(json_data: dict):
+    @classmethod
+    def from_json(cls, json_data: dict):
         base_max_hp = json_data.get('base_max_hp')
         hp = json_data.get('hp')
         base_defense = json_data.get('base_defense')
         base_power = json_data.get('base_power')
         xp = json_data.get('xp')
 
-        fighter = Fighter(base_max_hp, base_defense, base_power, xp)
+        fighter = cls(base_max_hp, base_defense, base_power, xp)
         fighter.hp = hp
 
         return fighter

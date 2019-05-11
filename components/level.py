@@ -29,11 +29,9 @@ class Level:
 
         return json_data
 
-    @staticmethod
-    def from_json(json_data: dict):
+    @classmethod
+    def from_json(cls, json_data: dict):
         current_level = json_data.get('current_level')
         current_xp = json_data.get('current_xp')
 
-        level = Level(current_level, current_xp)
-
-        return level
+        return cls(current_level, current_xp)

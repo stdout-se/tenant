@@ -151,8 +151,8 @@ class Entity:
 
         return json_data
 
-    @staticmethod
-    def from_json(json_data: dict):
+    @classmethod
+    def from_json(cls, json_data: dict):
         x = json_data.get('x')
         y = json_data.get('y')
         char = json_data.get('char')
@@ -170,7 +170,7 @@ class Entity:
         equipped_off_index_json = json_data.get('equipped_off_index')
         equippable_json = json_data.get('equippable')
 
-        entity = Entity(x, y, char, color, name, blocks, render_order)
+        entity = cls(x, y, char, color, name, blocks, render_order)
 
         if fighter_json:
             entity.fighter = Fighter.from_json(fighter_json)

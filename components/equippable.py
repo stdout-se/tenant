@@ -18,8 +18,8 @@ class Equippable:
 
         return json_data
 
-    @staticmethod
-    def from_json(json_data: dict):
+    @classmethod
+    def from_json(cls, json_data: dict):
         slot_json = json_data.get('slot')
         power_bonus = json_data.get('power_bonus')
         defense_bonus = json_data.get('defense_bonus')
@@ -27,5 +27,4 @@ class Equippable:
 
         slot = EquipmentSlots(slot_json)
 
-        equippable = Equippable(slot, power_bonus, defense_bonus, max_hp_bonux)
-        return equippable
+        return cls(slot, power_bonus, defense_bonus, max_hp_bonux)
